@@ -1,0 +1,29 @@
+name: Server CD
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update Docker Compose and deploy
+        run: |
+          sed -i 's|nab99/server-repo:latest|nab99/server-repo:latest|' docker-compose.yaml
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker-compose pull
+          docker-compose up -d
+
+      - name: Send Slack notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: Deployment Notification
+          SLACK_TEXT: |
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
