@@ -14,7 +14,7 @@ jobs:
 
       - name: Update Docker Compose and deploy
         run: |
-          sed -i 's|nab99/server-repo:latest|nab99/server-repo:new|' docker-compose.yaml
+          sed -i 's|nab99/server-repo:latest|nab99/server-repo:new|' docker-compose.yml
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker-compose pull
           docker-compose up -d
